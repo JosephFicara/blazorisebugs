@@ -1,0 +1,71 @@
+﻿@page "/"
+<!-- Required for context menu -->
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Index</PageTitle>
+
+<h1>Blazorise Tree Test</h1>
+
+@using System.Collections.ObjectModel;
+
+<Row>
+    <Column>
+
+        <h2>
+            <span style="font-weight:bolder" >Number of users:&nbsp;</Span><span style="font-weight:bolder;color:red">@Items[0].Children.Count</span>
+        </h2>
+        <p>
+            <Span Style="font-weight:bolder">To reproduce the issue you must: </Span>
+            <ol>
+                <li>
+                    Expand the Users node
+                </li>
+                <li>
+                    Select User A
+                </li>
+                <li>
+                    Delete User A by clicking the Delete button
+                </li>
+                <li>
+                    Select the Users node
+                </li>
+                <li>
+                    Add a User by clicking the Add button
+                </li>
+                <li>
+                    Observe that the single user added is presented multiple times
+                </li>
+                <li>
+                    Collapse the Users node, then expand the Users node, observe that there is only a single user displayed.
+                </li>
+            </ol>
+        </p>
+        <p>
+            <Button Disabled=@(_selectedNode != null && _selectedNode.Parent == null? false : true) Clicked="@OnAddNodeClick" Color="Color.Primary">Add node</Button>
+            <Button Disabled=@(_selectedNode != null && _selectedNode.Parent != null ? false : true) Clicked="@OnDeleteNodeClick" Color="Color.Primary">Delete node</Button>
+        </p>
+    </Column>
+    <Column>
+        <TreeView @ref="_treeViewControl" Nodes="Items" id="myTreeView"
+                  Selected="@_selectedNode"
+                  Class="tree-node-items"
+                  SelectedNodeChanged="@((TreeItemData selectedNode) => OnSelectedChanged(selectedNode))"
+                  GetChildNodesAsync="@(async item => await GetChildNodes(item))"
+                  HasChildNodes="@(item => true)">
+            <NodeContent>
+                <span class="custom-node" @onclick="(() => OnNodeClick(context))" data-node-id="@context.Text">
+                    <Icon Name=@context.IconName />
+                    <span>@context.Text</span>
+                    <span style="@context.Display">(Retrieving data...)</span>
+                    <span style="@context.Display" class="tree-button-root tree-info-text tree-treeview-item-arrow-load">
+                        <svg class="tree-icon-root tree-svg-icon tree-icon-size-medium" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                            <!--!-->
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"></path>
+                        </svg>
+                    </span>
+                </span>
+            </NodeContent>
+        </TreeView>
+    </Column>
+</Row>
